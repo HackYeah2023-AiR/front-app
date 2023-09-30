@@ -6,6 +6,12 @@ module.exports = {
     'react/style-prop-object': 0,
     'react/require-default-props': 0,
     'import/extensions': 0,
+    'prettier/prettier': [
+      'error',
+      {
+        endOfLine: 'auto',
+      },
+    ],
   },
   globals: {
     __DEV__: 'readonly',

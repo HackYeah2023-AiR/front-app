@@ -18,7 +18,7 @@ import {
   AntDesign,
   FontAwesome5,
 } from '@expo/vector-icons';
-import { Main } from './navigation/Main';
+import { GoogleMap } from './screens';
 import colors from './constants/colors';
 // import LogoIcon from '../assets/logo.png';
 const Tab = createBottomTabNavigator();
@@ -47,9 +47,9 @@ const CustomHeader = () => (
   </View>
 );
 
-const ProfileScreen = () => (
+const MapScreen = () => (
   <View style={styles.container}>
-    <Text>Profile Screen</Text>
+    <GoogleMap />
   </View>
 );
 
@@ -98,12 +98,15 @@ export default function App() {
                 />
               );
             },
+            tabBarStyle: {
+              height: 78,
+            },
             tabBarLabel: () => null,
           })}
         >
           <Tab.Screen name="Pets" component={HomeScreen} />
           <Tab.Screen name="AddImage" component={SettingsScreen} />
-          <Tab.Screen name="Map" component={ProfileScreen} />
+          <Tab.Screen name="Map" component={MapScreen} />
         </Tab.Navigator>
       </NavigationContainer>
     </SafeAreaView>
@@ -150,7 +153,7 @@ const styles = StyleSheet.create({
     padding: 5,
   },
   footer: {
-    height: 50,
+    height: 70,
     backgroundColor: '#f8f8f8',
     justifyContent: 'center',
     alignItems: 'center',
