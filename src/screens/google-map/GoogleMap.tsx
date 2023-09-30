@@ -9,7 +9,7 @@ import { Logs } from 'expo';
 import colors from '../../constants/colors';
 import { MarkerItem } from './MarkerItem';
 import { ModalItem } from './ModalItem';
-import { UserLocation, UserInitialRegion, ItemProps } from './types';
+import { UserInitialRegion, ItemProps } from './types';
 
 Logs.enableExpoCliLogging();
 
@@ -41,7 +41,6 @@ const data: ItemProps[] = [
 ];
 
 export const GoogleMap: React.FC = () => {
-  const [location, setLocation] = useState<UserLocation | null>(null);
   const [initialRegion, setInitialRegion] = useState<UserInitialRegion | null>(
     null,
   );
@@ -69,7 +68,6 @@ export const GoogleMap: React.FC = () => {
 
       const currentLocation = await ExpoLocation.getCurrentPositionAsync({}); // Renamed variable to currentLocation
 
-      setLocation(currentLocation.coords);
       setInitialRegion({
         latitude: currentLocation?.coords?.latitude,
         longitude: currentLocation?.coords?.longitude,
@@ -83,11 +81,10 @@ export const GoogleMap: React.FC = () => {
     getLocation();
   }, []);
 
-  console.log(location);
   return (
     <View style={styles.container}>
       {loading ? (
-        <ActivityIndicator size="large" color={colors.orange} /> // Loader is displayed while loading
+        <ActivityIndicator size="large" color={colors.orange} />
       ) : initialRegion ? (
         <MapView
           style={styles.map}

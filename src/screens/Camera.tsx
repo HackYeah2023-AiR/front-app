@@ -1,42 +1,36 @@
-import React, { useRef, useState } from 'react';
-import { View, TouchableOpacity, Text, StyleSheet } from 'react-native';
+import React, { useRef, useEffect, useState, useCallback } from 'react';
+import {
+  View,
+  TouchableOpacity,
+  Text,
+  StyleSheet,
+  Dimensions,
+  ActivityIndicator,
+} from 'react-native';
 import { Camera, CameraType } from 'expo-camera';
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  camera: {
-    flex: 1,
-  },
-  buttonContainer: {
-    flex: 1,
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    alignItems: 'flex-end',
-    marginBottom: 20,
-  },
-  button: {
-    padding: 20,
-    borderRadius: 10,
-    backgroundColor: 'white',
-  },
-  buttonText: {
-    fontSize: 18,
-    color: 'black',
-  },
-});
+import { useIsFocused } from '@react-navigation/native';
+import colors from '../constants/colors';
 
 export const CameraScreen = () => {
   const [type, setType] = useState(CameraType.back);
+  const [hasPermission, setHasPermission] = useState<boolean | null>(null);
   const cameraRef = useRef<Camera>(null);
+  const isFocused = useIsFocused(); // Get the focus state of the screen
 
-  function toggleCameraType() {
+  useEffect(() => {
+    (async () => {
+      const { status } = await Camera.requestCameraPermissionsAsync();
+      setHasPermission(status === 'granted');
+    })();
+  }, []);
+
+  const toggleCameraType = useCallback(() => {
     setType(current =>
       current === CameraType.back ? CameraType.front : CameraType.back,
     );
-  }
-  async function takePicture() {
+  }, []);
+
+  const takePicture = useCallback(async () => {
     if (cameraRef.current) {
       try {
         const { uri } = await cameraRef.current.takePictureAsync({});
@@ -45,23 +39,54 @@ export const CameraScreen = () => {
         console.error('Error taking picture:', error);
       }
     }
+  }, []);
+
+  if (hasPermission === null) {
+    return <View />;
   }
 
-  // @ts-ignore
+  if (hasPermission === false) {
+    return <Text>No access to camera</Text>;
+  }
+
+  if (!isFocused) {
+    return <ActivityIndicator size="large" color={colors.orange} />;
+  }
+
   return (
     <View style={styles.container}>
-      <Camera style={styles.camera} type={type}>
-        <View style={styles.buttonContainer}>
-          {/* eslint-disable-next-line react/jsx-no-bind */}
-          <TouchableOpacity style={styles.button} onPress={toggleCameraType}>
-            <Text style={styles.buttonText}>Flip Camera</Text>
-          </TouchableOpacity>
-          {/* eslint-disable-next-line react/jsx-no-bind */}
-          <TouchableOpacity style={styles.button} onPress={takePicture}>
-            <Text style={styles.buttonText}>Take Picture</Text>
-          </TouchableOpacity>
-        </View>
-      </Camera>
+      <Camera style={styles.camera} type={type} ref={cameraRef} />
+      <TouchableOpacity style={styles.takePictureButton} onPress={takePicture}>
+        <View style={styles.takePictureButtonLabel} />
+      </TouchableOpacity>
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    position: 'relative',
+    flex: 1,
+  },
+  camera: {
+    width: Dimensions.get('window').width,
+    height: Dimensions.get('window').height,
+  },
+  takePictureButton: {
+    position: 'absolute',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 5,
+    borderRadius: 40,
+    backgroundColor: 'transparent', // Set background color to transparent
+    borderColor: 'white',
+    borderWidth: 3,
+    bottom: 20,
+    left: (Dimensions.get('window').width - 82) / 2,
+  },
+  takePictureButtonLabel: {
+    padding: 33,
+    borderRadius: 40,
+    backgroundColor: colors.red,
+  },
+});
