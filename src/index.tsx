@@ -6,6 +6,7 @@ import {
   Image,
   TouchableOpacity,
   SafeAreaView,
+  Platform,
 } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { NavigationContainer } from '@react-navigation/native';
@@ -15,11 +16,11 @@ import {
   MaterialIcons,
   Feather,
   AntDesign,
+  FontAwesome5,
 } from '@expo/vector-icons';
 import { Main } from './navigation/Main';
 import colors from './constants/colors';
 // import LogoIcon from '../assets/logo.png';
-
 const Tab = createBottomTabNavigator();
 
 const HomeScreen = () => (
@@ -36,9 +37,12 @@ const SettingsScreen = () => (
 
 const CustomHeader = () => (
   <View style={styles.header}>
-    <Image source={require('../assets/logo.png')} style={styles.logo} />
-    <TouchableOpacity style={styles.iconButton}>
-      <Ionicons name="menu" size={24} color="#000" />
+    <View style={styles.headerLogoBlock}>
+      <Image source={require('../assets/logo.png')} style={styles.headerLogo} />
+      <Text style={styles.headerText}>AnimalTracker</Text>
+    </View>
+    <TouchableOpacity style={styles.headerIconButton}>
+      <FontAwesome5 name="user-alt" size={22} color={colors.gray} />
     </TouchableOpacity>
   </View>
 );
@@ -57,12 +61,13 @@ export default function App() {
         <CustomHeader />
         <Tab.Navigator
           screenOptions={({ route }) => ({
+            headerShown: false,
             tabBarIcon: ({ focused }) => {
               if (route.name === 'Pets') {
                 return (
                   <MaterialIcons
                     name="pets"
-                    size={24}
+                    size={28}
                     color={focused ? colors.orange : colors.gray}
                   />
                 );
@@ -71,7 +76,7 @@ export default function App() {
                 return (
                   <Ionicons
                     name="add-circle"
-                    size={30}
+                    size={40}
                     color={focused ? colors.orange : colors.gray}
                   />
                 );
@@ -80,7 +85,7 @@ export default function App() {
                 return (
                   <Feather
                     name="map-pin"
-                    size={24}
+                    size={28}
                     color={focused ? colors.orange : colors.gray}
                   />
                 );
@@ -117,17 +122,32 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   header: {
-    height: 50,
-    backgroundColor: '#f8f8f8',
+    height: 60,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 10,
+    paddingHorizontal: 30,
     borderBottomWidth: 1,
     borderBottomColor: '#ddd',
   },
+  headerLogoBlock: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  headerLogo: {
+    width: 40,
+    height: 40,
+    resizeMode: 'contain',
+    marginRight: 10,
+  },
   headerText: {
-    fontSize: 18,
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: colors.orange,
+  },
+  headerIconButton: {
+    padding: 5,
   },
   footer: {
     height: 50,
@@ -137,15 +157,7 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderTopColor: '#ddd',
   },
-  logo: {
-    width: 100,
-    height: 40,
-    resizeMode: 'contain',
-  },
   footerText: {
     fontSize: 18,
-  },
-  iconButton: {
-    padding: 5,
   },
 });
