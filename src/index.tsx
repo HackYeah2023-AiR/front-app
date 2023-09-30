@@ -20,6 +20,7 @@ import {
 } from '@expo/vector-icons';
 import { GoogleMap } from './screens';
 import colors from './constants/colors';
+import { CameraScreen } from './screens/Camera';
 // import LogoIcon from '../assets/logo.png';
 const Tab = createBottomTabNavigator();
 
@@ -29,9 +30,9 @@ const HomeScreen = () => (
   </View>
 );
 
-const SettingsScreen = () => (
+const CameraPage = () => (
   <View style={styles.container}>
-    <Text>Settings Screen</Text>
+    <CameraScreen />
   </View>
 );
 
@@ -105,7 +106,7 @@ export default function App() {
           })}
         >
           <Tab.Screen name="Pets" component={HomeScreen} />
-          <Tab.Screen name="AddImage" component={SettingsScreen} />
+          <Tab.Screen name="AddImage" component={CameraPage} />
           <Tab.Screen name="Map" component={MapScreen} />
         </Tab.Navigator>
       </NavigationContainer>
