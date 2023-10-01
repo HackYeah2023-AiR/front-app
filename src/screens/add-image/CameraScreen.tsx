@@ -7,15 +7,20 @@ import {
   Dimensions,
   ActivityIndicator,
 } from 'react-native';
-import { Camera, CameraType } from 'expo-camera';
+import { Camera } from 'expo-camera';
+import {
+  PinchGestureHandler,
+  GestureHandlerRootView,
+} from 'react-native-gesture-handler';
 import { useIsFocused } from '@react-navigation/native';
-import colors from '../constants/colors';
+import colors from '../../constants/colors';
 
-export const CameraScreen = () => {
-  const [type, setType] = useState(CameraType.back);
+export const CameraScreen = ({ navigation }) => {
   const [hasPermission, setHasPermission] = useState<boolean | null>(null);
+  const [zoom, setZoom] = useState(0);
   const cameraRef = useRef<Camera>(null);
   const isFocused = useIsFocused(); // Get the focus state of the screen
+  const [uri, setUri] = useState<string | null>(null);
 
   useEffect(() => {
     (async () => {
@@ -24,22 +29,49 @@ export const CameraScreen = () => {
     })();
   }, []);
 
-  const toggleCameraType = useCallback(() => {
-    setType(current =>
-      current === CameraType.back ? CameraType.front : CameraType.back,
-    );
+  const lastScaleRef = useRef(1);
+  const lastZoomRef = useRef({ lastCallTime: 0, zoom: 0 });
+
+  const onPinch = useCallback(event => {
+    const { scale } = event.nativeEvent;
+
+    // Throttle the function to ensure it's not called too frequently
+    const now = Date.now();
+    if (now - lastZoomRef.current.lastCallTime > 100) {
+      requestAnimationFrame(() => {
+        // Linear interpolation to smooth out the zooming effect
+        const smoothScale =
+          lastScaleRef.current + (scale - lastScaleRef.current) * 0.1;
+        setZoom(prevZoom => {
+          const newZoom = Math.min(
+            Math.max(prevZoom + (smoothScale - 1), 0),
+            1,
+          );
+          lastZoomRef.current = { lastCallTime: now, zoom: newZoom };
+          lastScaleRef.current = smoothScale;
+          return newZoom;
+        });
+      });
+    }
   }, []);
 
   const takePicture = useCallback(async () => {
     if (cameraRef.current) {
       try {
-        const { uri } = await cameraRef.current.takePictureAsync({});
-        console.log('Picture taken:', uri);
+        const { uri: URI } = await cameraRef.current.takePictureAsync({});
+        console.log('Picture taken:', URI);
+        setUri(URI);
       } catch (error) {
         console.error('Error taking picture:', error);
       }
     }
   }, []);
+
+  useEffect(() => {
+    if (uri) {
+      navigation.navigate('Form', { imageUri: uri });
+    }
+  }, [uri, navigation]);
 
   if (hasPermission === null) {
     return <View />;
@@ -54,12 +86,17 @@ export const CameraScreen = () => {
   }
 
   return (
-    <View style={styles.container}>
-      <Camera style={styles.camera} type={type} ref={cameraRef} />
+    <GestureHandlerRootView style={styles.container}>
+      <PinchGestureHandler
+        onGestureEvent={onPinch}
+        onHandlerStateChange={onPinch}
+      >
+        <Camera style={styles.camera} ref={cameraRef} zoom={zoom} />
+      </PinchGestureHandler>
       <TouchableOpacity style={styles.takePictureButton} onPress={takePicture}>
         <View style={styles.takePictureButtonLabel} />
       </TouchableOpacity>
-    </View>
+    </GestureHandlerRootView>
   );
 };
 

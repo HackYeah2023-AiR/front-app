@@ -18,9 +18,8 @@ import {
   AntDesign,
   FontAwesome5,
 } from '@expo/vector-icons';
-import { GoogleMap } from './screens';
+import { GoogleMap, AddImage } from './screens';
 import colors from './constants/colors';
-import { CameraScreen } from './screens/Camera';
 // import LogoIcon from '../assets/logo.png';
 const Tab = createBottomTabNavigator();
 
@@ -30,11 +29,7 @@ const HomeScreen = () => (
   </View>
 );
 
-const CameraPage = () => (
-  <View style={styles.container}>
-    <CameraScreen />
-  </View>
-);
+const AddImagePage = () => <AddImage />;
 
 const CustomHeader = () => (
   <View style={styles.header}>
@@ -48,11 +43,7 @@ const CustomHeader = () => (
   </View>
 );
 
-const MapScreen = () => (
-  <View style={styles.container}>
-    <GoogleMap />
-  </View>
-);
+const MapScreen = () => <GoogleMap />;
 
 export default function App() {
   return (
@@ -106,7 +97,7 @@ export default function App() {
           })}
         >
           <Tab.Screen name="Pets" component={HomeScreen} />
-          <Tab.Screen name="AddImage" component={CameraPage} />
+          <Tab.Screen name="AddImage" component={AddImagePage} />
           <Tab.Screen name="Map" component={MapScreen} />
         </Tab.Navigator>
       </NavigationContainer>
