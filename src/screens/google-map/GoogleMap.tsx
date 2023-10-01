@@ -6,14 +6,16 @@ import MapView from 'react-native-maps';
 import { View, StyleSheet, Dimensions, ActivityIndicator } from 'react-native';
 import * as ExpoLocation from 'expo-location';
 import { Logs } from 'expo';
+import axios from 'axios';
 import colors from '../../constants/colors';
 import { MarkerItem } from './MarkerItem';
 import { ModalItem } from './ModalItem';
 import { UserInitialRegion, ItemProps } from './types';
+import { GET_ALL_FOUNDED_ANIMALS } from '../../api/api';
 
 Logs.enableExpoCliLogging();
 
-const data: ItemProps[] = [
+const data2: ItemProps[] = [
   {
     id: 1,
     imageSource: require('../../../assets/fox.png'),
@@ -45,11 +47,20 @@ export const GoogleMap: React.FC = () => {
     null,
   );
   const [loading, setLoading] = useState(true);
+  const [loadingData, setLoadingData] = useState(true);
   const [openModal, setOpenModal] = useState(false);
   const [modalData, setModalData] = useState<ItemProps | null>(null);
+  const [data, setData] = useState({});
+
+  useEffect(() => {
+    axios.get(GET_ALL_FOUNDED_ANIMALS).then(res => {
+      setData(res.data);
+      setLoadingData(false);
+    });
+  }, []);
 
   const handleOpenModal = useCallback((index: number) => {
-    setModalData(data[index]);
+    setModalData(data2[index]);
     setOpenModal(true);
   }, []);
 
@@ -92,8 +103,8 @@ export const GoogleMap: React.FC = () => {
           showsUserLocation
           userLocationAnnotationTitle="You are here"
         >
-          {data
-            ? data.map((item, index) => {
+          {data2
+            ? data2.map((item, index) => {
                 return (
                   <MarkerItem
                     key={item.id}

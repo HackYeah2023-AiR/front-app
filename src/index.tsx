@@ -4,7 +4,6 @@ import {
   Text,
   StyleSheet,
   Image,
-  TouchableOpacity,
   SafeAreaView,
   Platform,
 } from 'react-native';
@@ -16,7 +15,6 @@ import {
   MaterialIcons,
   Feather,
   AntDesign,
-  FontAwesome5,
 } from '@expo/vector-icons';
 import { GoogleMap, AddImage, Pets } from './screens';
 import colors from './constants/colors';
@@ -29,9 +27,6 @@ const CustomHeader = () => (
       <Image source={require('../assets/logo.png')} style={styles.headerLogo} />
       <Text style={styles.headerText}>AnimalTracker</Text>
     </View>
-    <TouchableOpacity style={styles.headerIconButton}>
-      <FontAwesome5 name="user-alt" size={22} color={colors.gray} />
-    </TouchableOpacity>
   </View>
 );
 

@@ -1,17 +1,60 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { View, StyleSheet, Image, Text, TouchableOpacity } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
+import axios from 'axios';
+import * as ExpoLocation from 'expo-location';
 import colors from '../../constants/colors';
+import { POST_ANIMAL } from '../../api/api';
+import { AnimalRequest } from '../../api/model';
+import { UserLocation } from '../google-map/types';
+import { convertImageToBlob } from '../../utils/utils';
 
 export const Form = ({ navigation, route }) => {
   const { imageUri } = route.params;
-  const [selectedLabel, setSelectedLabel] = useState('Option 1');
+  const [selectedLabel, setSelectedLabel] = useState('dog');
+  const [location, setLocation] = useState<UserLocation | null>(null);
 
-  const handleSubmit = () => {
-    console.log('Submitted:', selectedLabel);
-    console.log(imageUri);
+  useEffect(() => {
+    const getLocation = async () => {
+      const { status } = await ExpoLocation.requestForegroundPermissionsAsync();
+      if (status !== 'granted') {
+        console.error('Permission to access location was denied');
+        return;
+      }
+
+      const currentLocation = await ExpoLocation.getCurrentPositionAsync({}); // Renamed variable to currentLocation
+
+      setLocation({
+        latitude: currentLocation?.coords?.latitude,
+        longitude: currentLocation?.coords?.longitude,
+      });
+    };
+
+    getLocation();
+  }, []);
+
+  const handleSubmit = useCallback(() => {
+    convertImageToBlob(imageUri).then(blob => {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const base64data = reader.result as string;
+
+        const formData: AnimalRequest = {
+          latitude: location?.latitude ?? 0,
+          longitude: location?.longitude ?? 0,
+          date: new Date().toISOString(),
+          isLost: false,
+          image: base64data,
+          speciesName: selectedLabel,
+        };
+
+        axios.post(POST_ANIMAL, formData);
+      };
+      reader.readAsDataURL(blob);
+    });
+
     navigation.navigate('CameraScreen');
-  };
+  }, [navigation, selectedLabel, imageUri, location]);
 
   return (
     <View style={styles.container}>

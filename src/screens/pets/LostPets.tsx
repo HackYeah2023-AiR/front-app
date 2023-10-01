@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -14,10 +14,14 @@ import {
   FontAwesome,
 } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
+import axios from 'axios';
 import colors from '../../constants/colors';
-import { PetItem } from './types';
+import {
+  GET_ALL_DISAPPEARED_ANIMALS,
+  DELETE_DISAPPEARED_ANIMALS,
+} from '../../api/api';
 
-const data: PetItem[] = [
+const data2: PetItem[] = [
   {
     id: 1,
     imageSource: require('../../../assets/small_dog.png'),
@@ -29,19 +33,43 @@ const data: PetItem[] = [
 ];
 
 export const LostPets = ({ navigation }) => {
+  const [data, setData] = useState({});
+  const [refetch, setRefetch] = useState(false);
+
   const handleButtonCLick = useCallback(() => {
     navigation.navigate('Form');
   }, [navigation]);
 
+  useEffect(() => {
+    axios.get(GET_ALL_DISAPPEARED_ANIMALS).then(res => {
+      const data = res.data;
+
+      const tData = data.map(item => {
+        return {
+          id: item.id,
+          imageSource: { uri: item.images[0] },
+        };
+      });
+
+      setData(tData);
+    });
+  }, [refetch]);
+
+  const handleRefetch = () => setRefetch(state => !state);
+
   return (
     <View style={styles.container}>
-      {data ? (
+      {data2 ? (
         <View style={styles.list}>
           <Text style={styles.text}>Lost pets</Text>
           <FlatList
-            data={data}
+            data={data2}
             renderItem={({ item }) => (
-              <PetItemComponent image={item.imageSource} />
+              <PetItemComponent
+                id={item.id}
+                image={item.imageSource}
+                handleRefetch={handleRefetch}
+              />
             )}
             style={{ flexGrow: 0 }}
           />
@@ -62,23 +90,37 @@ export const LostPets = ({ navigation }) => {
   );
 };
 
-const PetItemComponent = ({ image }: { image: ImageSourcePropType }) => {
+const PetItemComponent = ({
+  id,
+  image,
+  handleRefetch,
+}: {
+  id: number;
+  image: ImageSourcePropType;
+  handleRefetch: () => void;
+}) => {
   const navigation = useNavigation();
   const handleSearchClick = useCallback(() => {
     navigation.navigate('PetSwiper');
   }, [navigation]);
 
+  const handleOkClick = useCallback(() => {}, []);
+
+  const handleDeleteClick = useCallback(() => {
+    axios.delete(DELETE_DISAPPEARED_ANIMALS + id).then(() => handleRefetch());
+  }, [id, handleRefetch]);
+
   return (
     <View style={itemStyles.item}>
       <Image source={image} style={itemStyles.image} />
       <View style={itemStyles.buttons}>
-        <TouchableOpacity style={itemStyles.button}>
+        <TouchableOpacity style={itemStyles.button} onPress={handleOkClick}>
           <FontAwesome name="check" size={24} color="black" />
         </TouchableOpacity>
         <TouchableOpacity style={itemStyles.button} onPress={handleSearchClick}>
           <FontAwesome5 name="search" size={24} color="black" />
         </TouchableOpacity>
-        <TouchableOpacity style={itemStyles.button}>
+        <TouchableOpacity style={itemStyles.button} onPress={handleDeleteClick}>
           <MaterialCommunityIcons name="delete" size={24} color="black" />
         </TouchableOpacity>
       </View>
