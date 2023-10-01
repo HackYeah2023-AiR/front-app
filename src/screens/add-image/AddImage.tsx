@@ -4,11 +4,6 @@ import { useNavigation } from '@react-navigation/native';
 import { CameraScreen } from './CameraScreen';
 import { Form } from './Form';
 
-export type MainStackParams = {
-  CameraScreen: undefined;
-  Form: undefined;
-};
-
 const Stack = createStackNavigator();
 
 export const AddImage: React.FC = () => {

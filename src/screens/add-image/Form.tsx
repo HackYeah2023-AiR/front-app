@@ -3,13 +3,14 @@ import { View, StyleSheet, Image, Text, TouchableOpacity } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import colors from '../../constants/colors';
 
-export const Form = ({ route }) => {
+export const Form = ({ navigation, route }) => {
   const { imageUri } = route.params;
   const [selectedLabel, setSelectedLabel] = useState('Option 1');
 
   const handleSubmit = () => {
     console.log('Submitted:', selectedLabel);
     console.log(imageUri);
+    navigation.navigate('CameraScreen');
   };
 
   return (

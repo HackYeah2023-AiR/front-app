@@ -18,18 +18,10 @@ import {
   AntDesign,
   FontAwesome5,
 } from '@expo/vector-icons';
-import { GoogleMap, AddImage } from './screens';
+import { GoogleMap, AddImage, Pets } from './screens';
 import colors from './constants/colors';
 // import LogoIcon from '../assets/logo.png';
 const Tab = createBottomTabNavigator();
-
-const HomeScreen = () => (
-  <View style={styles.container}>
-    <Text>Home Screen</Text>
-  </View>
-);
-
-const AddImagePage = () => <AddImage />;
 
 const CustomHeader = () => (
   <View style={styles.header}>
@@ -96,8 +88,8 @@ export default function App() {
             tabBarLabel: () => null,
           })}
         >
-          <Tab.Screen name="Pets" component={HomeScreen} />
-          <Tab.Screen name="AddImage" component={AddImagePage} />
+          <Tab.Screen name="Pets" component={Pets} />
+          <Tab.Screen name="AddImage" component={AddImage} />
           <Tab.Screen name="Map" component={MapScreen} />
         </Tab.Navigator>
       </NavigationContainer>
