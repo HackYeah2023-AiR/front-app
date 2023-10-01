@@ -13,6 +13,7 @@ import {
   FontAwesome5,
   FontAwesome,
 } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
 import colors from '../../constants/colors';
 import { PetItem } from './types';
 
@@ -62,6 +63,11 @@ export const LostPets = ({ navigation }) => {
 };
 
 const PetItemComponent = ({ image }: { image: ImageSourcePropType }) => {
+  const navigation = useNavigation();
+  const handleSearchClick = useCallback(() => {
+    navigation.navigate('PetSwiper');
+  }, [navigation]);
+
   return (
     <View style={itemStyles.item}>
       <Image source={image} style={itemStyles.image} />
@@ -69,7 +75,7 @@ const PetItemComponent = ({ image }: { image: ImageSourcePropType }) => {
         <TouchableOpacity style={itemStyles.button}>
           <FontAwesome name="check" size={24} color="black" />
         </TouchableOpacity>
-        <TouchableOpacity style={itemStyles.button}>
+        <TouchableOpacity style={itemStyles.button} onPress={handleSearchClick}>
           <FontAwesome5 name="search" size={24} color="black" />
         </TouchableOpacity>
         <TouchableOpacity style={itemStyles.button}>

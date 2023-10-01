@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import {
   View,
   Text,
@@ -9,11 +9,18 @@ import {
 } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import colors from '../../constants/colors';
+import { PetMaps } from './PetsMap';
 
 export const Form = ({ navigation }) => {
   const [image, setImage] = useState<string | null>(null);
   const [text1, setText1] = useState('');
   const [text2, setText2] = useState('');
+  const [modalVisible, setModalVisible] = useState(false);
+  const [location, setLocation] = useState(null);
+
+  const handleLocationSelect = useCallback(selectedLocation => {
+    setLocation(selectedLocation);
+  }, []);
 
   const pickImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -50,12 +57,14 @@ export const Form = ({ navigation }) => {
         </View>
       </TouchableOpacity>
       <Text style={styles.text}>Last Location</Text>
-      <TextInput
-        style={styles.textInput}
-        value={text1}
-        onChangeText={setText1}
-        placeholder="Write last location"
-      />
+      <TouchableOpacity onPress={() => setModalVisible(true)}>
+        <TextInput
+          placeholder="Select location"
+          value={location ? `${location.latitude}, ${location.longitude}` : ''}
+          editable={false}
+          style={{ borderBottomWidth: 1, width: 200, textAlign: 'center' }}
+        />
+      </TouchableOpacity>
       <Text style={styles.text}>Disappearance Date</Text>
       <TextInput
         style={styles.textInput}
@@ -66,6 +75,11 @@ export const Form = ({ navigation }) => {
       <TouchableOpacity style={styles.button} onPress={handleButtonCLick}>
         <Text style={styles.buttonText}>Find</Text>
       </TouchableOpacity>
+      <PetMaps
+        visible={modalVisible}
+        onClose={() => setModalVisible(false)}
+        onSelect={handleLocationSelect}
+      />
     </View>
   );
 };
@@ -86,6 +100,7 @@ const styles = StyleSheet.create({
   text: {
     fontSize: 20,
     color: colors.gray,
+    marginTop: 30,
   },
   textInput: {
     height: 50,

@@ -11,6 +11,7 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import { ModalItemProps } from './types';
+import colors from '../../constants/colors';
 
 export const ModalItem = ({
   openModal,
@@ -26,10 +27,7 @@ export const ModalItem = ({
     >
       <View style={styles.centeredView}>
         <View style={styles.modalView}>
-          <Image
-            source={item.imageSource}
-            style={{ width: 200, height: 200 }}
-          />
+          <Image source={item.imageSource} style={styles.modalImage} />
           <Text style={styles.modalTitle}>{item.animalName}</Text>
           <Text style={styles.modalText}>{item.date}</Text>
           <TouchableOpacity
@@ -66,25 +64,36 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 5,
   },
+  modalImage: {
+    width: 200,
+    height: 200,
+    marginBottom: 20,
+  },
   modalTitle: {
     marginBottom: 15,
     textAlign: 'center',
-    fontSize: 18,
+    fontSize: 24,
     fontWeight: 'bold',
   },
   modalText: {
     marginBottom: 15,
     textAlign: 'center',
+    color: colors.gray,
   },
   closeButton: {
-    backgroundColor: '#2196F3',
-    borderRadius: 20,
-    padding: 10,
-    elevation: 2,
+    width: 120,
+    height: 40,
+    backgroundColor: 'white',
+    borderRadius: 30,
+    borderWidth: 3,
+    borderColor: colors.orange,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   textStyle: {
-    color: 'white',
-    fontWeight: 'bold',
     textAlign: 'center',
+    color: colors.orange,
+    fontSize: 24,
+    fontWeight: '800',
   },
 });

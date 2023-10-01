@@ -35,7 +35,11 @@ const CustomHeader = () => (
   </View>
 );
 
-const MapScreen = () => <GoogleMap />;
+const MapScreen = () => (
+  <View style={styles.container}>
+    <GoogleMap />
+  </View>
+);
 
 export default function App() {
   return (
